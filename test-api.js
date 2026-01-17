@@ -1,4 +1,5 @@
 
+/* eslint-env node */
 import fetch from 'node-fetch';
 
 const API_KEY = process.env.GROQ_API_KEY || '';

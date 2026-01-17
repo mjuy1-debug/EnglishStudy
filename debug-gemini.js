@@ -1,4 +1,5 @@
 
+/* eslint-env node */
 import fetch from 'node-fetch';
 
 const KEY = process.env.GEMINI_API_KEY || '';

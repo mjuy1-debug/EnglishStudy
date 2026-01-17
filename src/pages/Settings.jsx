@@ -61,6 +61,43 @@ const Settings = () => {
         </div>
       </div>
 
+
+      <div className="setting-section" style={{ marginTop: '1.5rem' }}>
+        <h3 style={{ fontSize: '0.9rem', color: 'var(--text-tertiary)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>API 설정</h3>
+
+        <div className="card setting-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: '1rem' }}>
+            <div className="setting-icon"><RefreshCw size={20} /></div>
+            <div className="setting-info">
+              <span>Groq API Key</span>
+              <p>AI 대화 기능을 위해 필요합니다.</p>
+            </div>
+          </div>
+          <input
+            type="password"
+            placeholder="gsk_..."
+            value={user.apiKeys?.groq || ''}
+            onChange={(e) => {
+              const newKeys = { ...user.apiKeys, groq: e.target.value };
+              const updated = updateUser({ apiKeys: newKeys });
+              setUser(updated);
+              localStorage.setItem('GROQ_API_KEY', e.target.value);
+            }}
+            style={{
+              width: '100%',
+              padding: '0.8rem',
+              borderRadius: '0.5rem',
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              marginTop: '0.5rem',
+              fontSize: '0.9rem'
+            }}
+          />
+        </div>
+      </div>
+
+
       <div className="setting-section" style={{ marginTop: '2rem' }}>
         <h3 style={{ fontSize: '0.9rem', color: 'var(--text-tertiary)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>데이터 관리</h3>
 

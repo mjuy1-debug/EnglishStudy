@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
-  { ignores: ['dist', 'build_output'] },
+  { ignores: ['dist', 'build_output', 'test-api.js', 'verify-keys.js', 'list-gemini-models.js', 'debug-gemini.js'] },
   {
     files: ['**/*.{js,jsx}'],
     extends: [

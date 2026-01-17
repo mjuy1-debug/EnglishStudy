@@ -1,10 +1,11 @@
-// Debug comment to shift lines
 /**
  * Real AI Service using Groq API
  * Model: llama-3.3-70b-versatile
  */
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || ''; // User provided Key
+// Helper to get keys
+const getGroqKey = () => localStorage.getItem('GROQ_API_KEY') || import.meta.env.VITE_GROQ_API_KEY || '';
+
 const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 const SYSTEM_PROMPT = `
@@ -53,6 +54,16 @@ AI: {
 
 export const sendMessageToAI = async (message, history) => {
     try {
+        const apiKey = getGroqKey();
+        if (!apiKey) {
+            return {
+                english: "Please set your Groq API Key in Settings.",
+                korean: "설정에서 Groq API 키를 입력해주세요.",
+                correction: null,
+                suggestions: []
+            };
+        }
+
         // Construct standard message history
         // Map our internal format {role, content/english} to API format
         const apiMessages = [
@@ -72,7 +83,7 @@ export const sendMessageToAI = async (message, history) => {
         const response = await fetch(API_URL, {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
+                "Authorization": `Bearer ${apiKey}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -134,10 +145,10 @@ RULES:
 
 // Multi-Provider Configuration
 // We rotate through different providers to avoid rate limits
-const API_CONFIGS = [
+const getApiConfigs = () => [
     {
         provider: 'groq',
-        key: import.meta.env.VITE_GROQ_API_KEY || '',
+        key: getGroqKey(),
         url: 'https://api.groq.com/openai/v1/chat/completions',
         model: 'llama-3.3-70b-versatile'
     }
@@ -146,8 +157,9 @@ const API_CONFIGS = [
 let currentIndex = 0;
 
 const getNextConfig = () => {
-    currentIndex = (currentIndex + 1) % API_CONFIGS.length;
-    return API_CONFIGS[currentIndex];
+    const configs = getApiConfigs();
+    currentIndex = (currentIndex + 1) % configs.length;
+    return configs[currentIndex];
 };
 
 // Helper: Clean Response Text
@@ -202,12 +214,13 @@ const fetchGemini = async (config, systemPrompt, userPrompt) => {
 };
 
 export const getDailyVerseFromAI = async (retryCount = 0) => {
-    if (retryCount >= API_CONFIGS.length * 2) {
+    const configs = getApiConfigs();
+    if (retryCount >= configs.length * 2) {
         console.error("All providers exhausted.");
         return null;
     }
 
-    const config = API_CONFIGS[currentIndex];
+    const config = configs[currentIndex];
     const seed = Date.now();
 
     const SYSTEM_PROMPT_TEXT = "You are a Bible Verse generator.";
