@@ -1,0 +1,64 @@
+.app-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    background-color: rgba(248, 250, 252, 0.8);
+    /* Semi-transparent base */
+}
+
+@media (prefers-color-scheme: dark) {
+    .app-header {
+        background-color: rgba(15, 23, 42, 0.8);
+    }
+}
+
+.logo-text {
+    font-size: 1.25rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 600px;
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    padding: 0.75rem 0.5rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    z-index: 20;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-tertiary);
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+}

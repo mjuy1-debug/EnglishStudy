@@ -1,0 +1,185 @@
+/* Base Variables (Light Mode Default) */
+:root {
+    --bible-bg: white;
+    --bible-text-main: #1e293b;
+    /* Dark Slate */
+    --bible-text-sub: #475569;
+    /* Slate 600 */
+    --bible-accent: #6366f1;
+    /* Indigo */
+    --bible-reflection-bg: #f8fafc;
+    --bible-reflection-text: #334155;
+    --bible-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --bible-border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Mode Overrides */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bible-bg: linear-gradient(145deg, #1e293b, #0f172a);
+        --bible-text-main: #f1f5f9;
+        /* White/Light Gray */
+        --bible-text-sub: #cbd5e1;
+        /* Light Slate */
+        --bible-accent: #818cf8;
+        /* Lighter Indigo */
+        --bible-reflection-bg: rgba(30, 41, 59, 0.6);
+        /* Semi-transparent dark */
+        --bible-reflection-text: #e2e8f0;
+        /* Light text */
+        --bible-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --bible-border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+.bible-card {
+    background: var(--bible-bg);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--bible-shadow);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: var(--bible-border);
+}
+
+.bible-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.bible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--bible-accent);
+}
+
+.title-row h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bible-text-sub);
+}
+
+.icon-main {
+    color: var(--bible-accent);
+}
+
+.refresh-btn {
+    color: var(--bible-text-sub);
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.2s;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.refresh-btn:hover {
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--bible-accent);
+    opacity: 1;
+}
+
+.spinning {
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.verse-en {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--bible-text-main);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    font-family: 'serif';
+}
+
+.verse-ref {
+    font-size: 0.875rem;
+    color: var(--bible-accent);
+    font-weight: 500;
+    text-align: right;
+    margin-bottom: 1.25rem;
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--bible-text-sub);
+    opacity: 0.2;
+    margin: 1rem 0;
+}
+
+.verse-ko {
+    font-size: 1rem;
+    color: var(--bible-text-main);
+    /* Crucial: Uses light color in dark mode */
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    font-weight: 500;
+    opacity: 0.95;
+    min-height: 1.5rem;
+    /* Prevent collapse if empty */
+}
+
+.reflection-box {
+    background-color: var(--bible-reflection-bg);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--bible-reflection-text);
+    /* Crucial: Uses light color in dark mode */
+    border-left: 3px solid #f43f5e;
+    min-height: 2.5rem;
+    /* Prevent collapse */
+}
+
+.icon-heart {
+    color: #f43f5e;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.fade-out {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
