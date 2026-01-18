@@ -25,24 +25,42 @@ const PatternDrill = () => {
         }
     };
 
+    const [feedbackMessage, setFeedbackMessage] = useState('');
+
     const checkAnswer = (spokenText) => {
         if (!spokenText) return;
 
         // If we are not in practice step, ignore
         if (step === 0 || isComplete || !currentExample) return;
 
-        const cleanTranscript = spokenText.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const cleanTarget = currentExample.en.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const cleanTranscript = spokenText.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim();
+        const cleanTarget = currentExample.en.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim();
 
-        if (cleanTranscript.length > 2 && (cleanTarget.includes(cleanTranscript) || cleanTranscript.includes(cleanTarget))) {
+        // 1. Calculate simple overlap
+        const spokenWords = cleanTranscript.split(/\s+/);
+        const targetWords = cleanTarget.split(/\s+/);
+
+        let matchCount = 0;
+        spokenWords.forEach(word => {
+            if (targetWords.includes(word)) matchCount++;
+        });
+
+        const accuracy = matchCount / targetWords.length;
+
+        // Relaxed criteria: 60% words match OR transcript contains the core pattern (simplistic check)
+        const passed = accuracy >= 0.6 || cleanTarget === cleanTranscript;
+
+        if (passed) {
             setFeedback('correct');
+            setFeedbackMessage('');
             speakText("Great job!");
             setTimeout(() => {
                 nextStep();
             }, 1500);
         } else {
             setFeedback('retry');
-            speakText("Try again.");
+            setFeedbackMessage(`You said: "${spokenText}"`);
+            speakText("Let's try that again. Listen closely.");
         }
     };
 
@@ -140,7 +158,10 @@ const PatternDrill = () => {
                         </p>
 
                         {feedback === 'retry' && (
-                            <p style={{ color: '#ef4444', marginTop: '0.5rem', fontWeight: 'bold' }}>다시 한번 시도해보세요!</p>
+                            <div style={{ marginTop: '0.5rem' }}>
+                                <p style={{ color: '#ef4444', fontWeight: 'bold' }}>다시 한번 시도해보세요!</p>
+                                {feedbackMessage && <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '0.2rem' }}>{feedbackMessage}</p>}
+                            </div>
                         )}
 
                         <button
