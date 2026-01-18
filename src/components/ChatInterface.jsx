@@ -25,16 +25,6 @@ const ChatInterface = () => {
     const [, forceUpdate] = useState(0);
     const messagesEndRef = useRef(null);
 
-    // STT Hook
-    const { isListening, transcript, startListening, stopListening, hasRecognition } = useSpeechRecognition();
-
-    // Sync transcript to input
-    useEffect(() => {
-        if (transcript) {
-            setInput(transcript);
-        }
-    }, [transcript]);
-
     const handleMicClick = () => {
         if (isListening) {
             stopListening();
@@ -51,20 +41,19 @@ const ChatInterface = () => {
         scrollToBottom();
     }, [messages]);
 
-    const handleSend = async (e) => {
-        e.preventDefault();
-        if (!input.trim() || isLoading) return;
+    const submitMessage = async (text) => {
+        if (!text.trim() || isLoading) return;
 
-        const userMsg = { role: 'user', content: input };
+        const userMsg = { role: 'user', content: text };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setIsLoading(true);
 
-        // Gamification: Count this as speaking (even if typed, for MVP simplicity, or restrict to voice only later)
+        // Gamification: Count this as speaking
         incrementSpeakingCount(1);
 
         try {
-            const response = await sendMessageToAI(input, messages);
+            const response = await sendMessageToAI(text, messages);
             setMessages(prev => [...prev, { role: 'assistant', ...response }]);
         } catch (error) {
             console.error(error);
@@ -72,6 +61,29 @@ const ChatInterface = () => {
             setIsLoading(false);
         }
     };
+
+    const handleSend = (e) => {
+        e.preventDefault();
+        submitMessage(input);
+    };
+
+    const handleSpeechEnd = (text) => {
+        if (text && text.trim()) {
+            setInput(text);
+            submitMessage(text);
+        }
+    };
+
+    // STT Hook
+    // Pass handleSpeechEnd to auto-send when speech stops
+    const { isListening, transcript, startListening, stopListening, hasRecognition } = useSpeechRecognition(handleSpeechEnd);
+
+    // Sync transcript to input while listening for visual feedback
+    useEffect(() => {
+        if (isListening && transcript) {
+            setInput(transcript);
+        }
+    }, [isListening, transcript]);
 
     const toggleBookmark = (msg) => {
         if (isBookmarked(msg.english)) {
