@@ -37,6 +37,19 @@ const ChatInterface = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Auto-speak whenever a new assistant message is added
+    useEffect(() => {
+        const lastMsg = messages[messages.length - 1];
+        if (lastMsg && lastMsg.role === 'assistant') {
+            // Check if it's the initial message or a response
+            // Add small delay for natural feel
+            const timer = setTimeout(() => {
+                speakText(lastMsg.english);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [messages]);
+
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
