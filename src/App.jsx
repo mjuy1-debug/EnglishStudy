@@ -7,7 +7,7 @@ import RolePlayMode from './pages/RolePlayMode';
 import ReviewPage from './pages/ReviewPage';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
-import PatternPractice from './pages/PatternPractice';
+import PatternDrill from './pages/PatternDrill';
 import './App.css';
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
           <Route path="chat" element={<ChatMode />} />
           <Route path="roleplay" element={<RolePlayMode />} />
           <Route path="review" element={<ReviewPage />} />
-          <Route path="pattern" element={<PatternPractice />} />
+          <Route path="pattern" element={<PatternDrill />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/" replace />} />

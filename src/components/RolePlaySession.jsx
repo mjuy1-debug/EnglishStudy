@@ -4,6 +4,8 @@ import { sendMessageToAI } from '../services/aiService';
 import { speakText } from '../services/ttsService'; // Added TTS import
 import './ChatInterface.css'; // Reuse chat styles for consistency
 
+import useSpeechRecognition from '../hooks/useSpeechRecognition';
+
 const RolePlaySession = ({ scenario, onExit }) => {
     const [messages, setMessages] = useState([
         {
@@ -35,17 +37,16 @@ const RolePlaySession = ({ scenario, onExit }) => {
         }
     }, [messages]);
 
-    const handleSend = async (e) => {
-        e.preventDefault();
-        if (!input.trim() || isLoading) return;
+    const submitMessage = async (text) => {
+        if (!text.trim() || isLoading) return;
 
-        const userMsg = { role: 'user', content: input };
+        const userMsg = { role: 'user', content: text };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setIsLoading(true);
 
         try {
-            const response = await sendMessageToAI(input, messages);
+            const response = await sendMessageToAI(text, messages);
             setMessages(prev => [...prev, { role: 'assistant', ...response }]);
         } catch (error) {
             console.error(error);
@@ -53,6 +54,20 @@ const RolePlaySession = ({ scenario, onExit }) => {
             setIsLoading(false);
         }
     };
+
+    const handleSend = (e) => {
+        e.preventDefault();
+        submitMessage(input);
+    };
+
+    const handleSpeechEnd = (text) => {
+        if (text && text.trim()) {
+            setInput(text);
+            submitMessage(text);
+        }
+    };
+
+    const { isListening, startListening } = useSpeechRecognition(handleSpeechEnd);
 
     return (
         <div className="chat-container">
@@ -116,7 +131,7 @@ const RolePlaySession = ({ scenario, onExit }) => {
                                 className="suggestion-chip"
                                 onClick={() => {
                                     setInput(text);
-                                    setTimeout(() => document.querySelector('.send-btn').click(), 0);
+                                    submitMessage(text);
                                 }}
                             >
                                 <span className="sugg-en">{text}</span>
@@ -128,14 +143,19 @@ const RolePlaySession = ({ scenario, onExit }) => {
             )}
 
             <form className="input-area" onSubmit={handleSend}>
-                <button type="button" className="mic-btn">
+                <button
+                    type="button"
+                    className={`mic-btn ${isListening ? 'listening' : ''}`}
+                    onClick={startListening}
+                    style={{ backgroundColor: isListening ? '#ef4444' : undefined, color: isListening ? 'white' : undefined }}
+                >
                     <Mic size={20} />
                 </button>
                 <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Type your response..."
+                    placeholder={isListening ? "Listening..." : "Type your response..."}
                     disabled={isLoading}
                 />
                 <button type="submit" className="send-btn" disabled={!input.trim() || isLoading}>

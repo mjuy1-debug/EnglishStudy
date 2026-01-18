@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 
-const useSpeechRecognition = () => {
+const useSpeechRecognition = (onSpeechEnd) => {
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
     const recognitionRef = useRef(null);
+    const transcriptRef = useRef(''); // Ref to keep track of latest transcript
 
     useEffect(() => {
         if (!('webkitSpeechRecognition' in window)) {
@@ -14,10 +15,11 @@ const useSpeechRecognition = () => {
         const recognition = new window.webkitSpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = true;
-        recognition.lang = 'en-US'; // Default to English practice
+        recognition.lang = 'en-US';
 
         recognition.onstart = () => {
             setIsListening(true);
+            transcriptRef.current = ''; // Reset on start
         };
 
         recognition.onresult = (event) => {
@@ -32,8 +34,9 @@ const useSpeechRecognition = () => {
                 }
             }
 
-            // We return both, but usually update state with the latest meaningful text
-            setTranscript(finalTranscript || interimTranscript);
+            const currentTranscript = finalTranscript || interimTranscript;
+            setTranscript(currentTranscript);
+            transcriptRef.current = currentTranscript;
         };
 
         recognition.onerror = (event) => {
@@ -43,14 +46,18 @@ const useSpeechRecognition = () => {
 
         recognition.onend = () => {
             setIsListening(false);
+            if (onSpeechEnd) {
+                onSpeechEnd(transcriptRef.current);
+            }
         };
 
         recognitionRef.current = recognition;
-    }, []);
+    }, [onSpeechEnd]);
 
     const startListening = () => {
         if (recognitionRef.current && !isListening) {
             setTranscript('');
+            transcriptRef.current = '';
             recognitionRef.current.start();
         }
     };

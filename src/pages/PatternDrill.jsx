@@ -5,39 +5,15 @@ import { getRandomPattern } from '../data/patterns';
 import { speakText } from '../services/ttsService';
 import useSpeechRecognition from '../hooks/useSpeechRecognition';
 
-const PatternPractice = () => {
+const PatternDrill = () => {
     const navigate = useNavigate();
     const [currentPattern, setCurrentPattern] = useState(() => getRandomPattern());
     const [step, setStep] = useState(0); // 0: Intro, 1..3: Practice
     const [isComplete, setIsComplete] = useState(false);
-
-    // Voice Recognition
-    const { isListening, transcript, startListening, stopListening } = useSpeechRecognition();
     const [feedback, setFeedback] = useState(null); // null, 'correct', 'retry'
 
-    const handleSpeakTarget = (targetText) => {
-        if (isListening) {
-            stopListening();
-            // Check correctness (simple inclusion check for MVP)
-            const cleanTranscript = transcript.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const cleanTarget = targetText.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-            // Allow loose matching (contains main words)
-            if (cleanTranscript.length > 3 && (cleanTarget.includes(cleanTranscript) || cleanTranscript.includes(cleanTarget))) {
-                setFeedback('correct');
-                speakText("Great job!");
-                setTimeout(() => {
-                    nextStep();
-                }, 1500);
-            } else {
-                setFeedback('retry');
-                speakText("Try again.");
-            }
-        } else {
-            startListening();
-            setFeedback(null);
-        }
-    };
+    // Define currentExample based on step
+    const currentExample = step > 0 ? currentPattern.examples[step - 1] : null;
 
     const nextStep = () => {
         if (step < currentPattern.examples.length) {
@@ -46,6 +22,38 @@ const PatternPractice = () => {
         } else {
             setIsComplete(true);
             speakText("Lesson complete!");
+        }
+    };
+
+    const checkAnswer = (spokenText) => {
+        if (!spokenText) return;
+
+        // If we are not in practice step, ignore
+        if (step === 0 || isComplete || !currentExample) return;
+
+        const cleanTranscript = spokenText.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const cleanTarget = currentExample.en.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        if (cleanTranscript.length > 2 && (cleanTarget.includes(cleanTranscript) || cleanTranscript.includes(cleanTarget))) {
+            setFeedback('correct');
+            speakText("Great job!");
+            setTimeout(() => {
+                nextStep();
+            }, 1500);
+        } else {
+            setFeedback('retry');
+            speakText("Try again.");
+        }
+    };
+
+    const { isListening, transcript, startListening, stopListening } = useSpeechRecognition(checkAnswer);
+
+    const handleToggleListening = () => {
+        if (isListening) {
+            stopListening();
+        } else {
+            setFeedback(null);
+            startListening();
         }
     };
 
@@ -69,8 +77,6 @@ const PatternPractice = () => {
             </div>
         );
     }
-
-    const currentExample = step > 0 ? currentPattern.examples[step - 1] : null;
 
     return (
         <div className="path-page animate-fade-in">
@@ -125,7 +131,7 @@ const PatternPractice = () => {
                                 justifyContent: 'center',
                                 backgroundColor: isListening ? '#ef4444' : 'var(--primary-color)'
                             }}
-                            onClick={() => handleSpeakTarget(currentExample.en)}
+                            onClick={handleToggleListening}
                         >
                             <Mic size={32} />
                         </button>
@@ -161,4 +167,4 @@ const PatternPractice = () => {
     );
 };
 
-export default PatternPractice;
+export default PatternDrill;
