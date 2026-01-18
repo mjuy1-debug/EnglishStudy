@@ -158,9 +158,18 @@ const PatternDrill = () => {
                         </p>
 
                         {feedback === 'retry' && (
-                            <div style={{ marginTop: '0.5rem' }}>
-                                <p style={{ color: '#ef4444', fontWeight: 'bold' }}>다시 한번 시도해보세요!</p>
-                                {feedbackMessage && <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '0.2rem' }}>{feedbackMessage}</p>}
+                            <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#fff5f5', borderRadius: '0.5rem', fontSize: '0.95rem' }}>
+                                <p style={{ color: '#ef4444', fontWeight: 'bold', marginBottom: '0.8rem' }}>다시 한번 시도해보세요!</p>
+                                <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <span style={{ fontWeight: '600', minWidth: '50px', color: '#666' }}>정답:</span>
+                                        <span style={{ color: '#059669', fontWeight: '500' }}>{currentExample.en}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <span style={{ fontWeight: '600', minWidth: '50px', color: '#666' }}>인식:</span>
+                                        <span style={{ color: '#dc2626' }}>{feedbackMessage.replace('You said: ', '').replace(/"/g, '')}</span>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
